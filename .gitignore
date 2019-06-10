@@ -1,0 +1,7 @@
+/*.egg-info/
+/poetry.lock
+__pycache__/
+.mypy_cache/
+/.coverage
+/docs/_build/
+/dist/
