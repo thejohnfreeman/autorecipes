@@ -4,10 +4,10 @@
 conan_cmake
 ===========
 
-A generic [Conan][] recipe for [CMake][] projects.
+A generic Conan_ recipe for CMake_ projects.
 
-[Conan]: https://docs.conan.io/
-[CMake]: https://cmake.org/cmake/help/latest/
+.. _Conan: https://docs.conan.io/
+.. _CMake: https://cmake.org/cmake/help/latest/
 
 .. image:: https://travis-ci.org/thejohnfreeman/conan-cmake.svg?branch=master
    :target: https://travis-ci.org/thejohnfreeman/conan-cmake
