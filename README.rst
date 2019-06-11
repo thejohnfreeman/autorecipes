@@ -11,7 +11,11 @@ A generic Conan_ recipe for CMake_ projects.
 
 .. image:: https://travis-ci.org/thejohnfreeman/conan-cmake.svg?branch=master
    :target: https://travis-ci.org/thejohnfreeman/conan-cmake
-   :alt: Build status
+   :alt: Build status: Linux and OSX
+
+.. image:: https://ci.appveyor.com/api/projects/status/github/thejohnfreeman/conan-cmake?branch=master&svg=true
+   :target: https://ci.appveyor.com/project/thejohnfreeman/conan-cmake
+   :alt: Build status: Windows
 
 .. image:: https://readthedocs.org/projects/conan-cmake/badge/?version=latest
    :target: https://conan-cmake.readthedocs.io/
