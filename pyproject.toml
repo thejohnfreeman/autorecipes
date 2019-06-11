@@ -14,6 +14,8 @@ python = "^3.6-dev"
 sphinx = {version = "^1.8",optional = true}
 sphinx_rtd_theme = {version = "^0.4.3",optional = true}
 toml = {version = "^0.10.0",optional = true}
+typing_extensions = "^3.7"
+conan = "^1.14"
 
 [tool.poetry.extras]
 docs = ["sphinx", "sphinx_rtd_theme", "toml"]
