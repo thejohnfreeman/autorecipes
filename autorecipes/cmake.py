@@ -8,7 +8,7 @@ import typing as t
 
 from conans import CMake, ConanFile  # type: ignore
 
-from conan_cmake.descriptors import cached_property, classproperty
+from autorecipes.descriptors import cached_property, classproperty
 
 
 class CMakeAttributes:

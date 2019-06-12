@@ -8,7 +8,7 @@
 
 # -- Project information -----------------------------------------------------
 
-project = 'conan_cmake'
+project = 'autorecipes'
 copyright = '2019, John Freeman'
 author = 'John Freeman'
 

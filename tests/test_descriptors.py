@@ -1,6 +1,6 @@
 # pylint: disable=missing-docstring,no-self-argument,no-self-use
 
-from conan_cmake.descriptors import classproperty, cached_classproperty
+from autorecipes.descriptors import classproperty, cached_classproperty
 
 
 def test_cached_classproperty():

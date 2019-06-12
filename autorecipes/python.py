@@ -10,7 +10,7 @@ import typing as t
 
 from conans import ConanFile  # type: ignore
 
-from conan_cmake.descriptors import classproperty, fmap
+from autorecipes.descriptors import classproperty, fmap
 
 
 class PythonAttributes:

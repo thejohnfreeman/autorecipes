@@ -1,13 +1,13 @@
 [tool.poetry]
-name = "conan_cmake"
+name = "autorecipes"
 version = "0.1.0"
-description = "A generic Conan recipe for CMake projects."
+description = "Generic Conan recipes for CMake and Python projects."
 authors = ["John Freeman <jfreeman08@gmail.com>"]
-documentation = "https://conan-cmake.readthedocs.io/"
-repository = "https://github.com/thejohnfreeman/conan-cmake/"
+documentation = "https://autorecipes.readthedocs.io/"
+repository = "https://github.com/thejohnfreeman/autorecipes/"
 readme = "README.rst"
 license = "ISC"
-packages = [{ include = "conan_cmake" }]
+packages = [{ include = "autorecipes" }]
 
 [tool.poetry.dependencies]
 python = "^3.6-dev"

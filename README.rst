@@ -1,32 +1,32 @@
 .. start-include
 
 ===========
-conan_cmake
+autorecipes
 ===========
 
-A generic Conan_ recipe for CMake_ projects.
+Generic Conan_ recipes for CMake_ and Python projects.
 
 .. _Conan: https://docs.conan.io/
 .. _CMake: https://cmake.org/cmake/help/latest/
 
-.. image:: https://travis-ci.org/thejohnfreeman/conan-cmake.svg?branch=master
-   :target: https://travis-ci.org/thejohnfreeman/conan-cmake
+.. image:: https://travis-ci.org/thejohnfreeman/autorecipes.svg?branch=master
+   :target: https://travis-ci.org/thejohnfreeman/autorecipes
    :alt: Build status: Linux and OSX
 
-.. image:: https://ci.appveyor.com/api/projects/status/github/thejohnfreeman/conan-cmake?branch=master&svg=true
-   :target: https://ci.appveyor.com/project/thejohnfreeman/conan-cmake
+.. image:: https://ci.appveyor.com/api/projects/status/github/thejohnfreeman/autorecipes?branch=master&svg=true
+   :target: https://ci.appveyor.com/project/thejohnfreeman/autorecipes
    :alt: Build status: Windows
 
-.. image:: https://readthedocs.org/projects/conan-cmake/badge/?version=latest
-   :target: https://conan-cmake.readthedocs.io/
+.. image:: https://readthedocs.org/projects/autorecipes/badge/?version=latest
+   :target: https://autorecipes.readthedocs.io/
    :alt: Documentation status
 
-.. image:: https://img.shields.io/pypi/v/conan_cmake.svg
-   :target: https://pypi.org/project/conan_cmake/
+.. image:: https://img.shields.io/pypi/v/autorecipes.svg
+   :target: https://pypi.org/project/autorecipes/
    :alt: Latest PyPI version
 
-.. image:: https://img.shields.io/pypi/pyversions/conan_cmake.svg
-   :target: https://pypi.org/project/conan_cmake/
+.. image:: https://img.shields.io/pypi/pyversions/autorecipes.svg
+   :target: https://pypi.org/project/autorecipes/
    :alt: Python versions supported
 
 .. end-include

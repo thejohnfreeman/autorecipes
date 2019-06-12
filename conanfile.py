@@ -1,17 +1,17 @@
 from conans import ConanFile
 
-from conan_cmake import CMakeConanFile as _CMakeConanFile
+from autorecipes import CMakeConanFile as _CMakeConanFile
 
 
 class Recipe(ConanFile):
-    name = 'conan_cmake'
+    name = 'autorecipes'
     version = '0.1.0'
-    description = 'A generic Conan recipe for CMake projects.'
+    description = 'Generic Conan recipes for CMake and Python projects.'
     author = 'John Freeman <jfreeman08@gmail.com>'
-    homepage = 'https://conan-cmake.readthedocs.io/'
-    url = 'https://github.com/thejohnfreeman/conan-cmake/'
+    homepage = 'https://autorecipes.readthedocs.io/'
+    url = 'https://github.com/thejohnfreeman/autorecipes/'
     license = 'ISC'
-    exports = 'conan_cmake/**.py'
+    exports = 'autorecipes/**.py'
 
 
 def base():
