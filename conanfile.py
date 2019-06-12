@@ -1,6 +1,6 @@
 from conans import ConanFile
 
-from autorecipes import CMakeConanFile as _CMakeConanFile
+from autorecipes import CMakeConanFile as _CMakeConanFile, PythonConanFile as _PythonConanFile
 
 
 class Recipe(ConanFile):
@@ -14,5 +14,8 @@ class Recipe(ConanFile):
     exports = 'autorecipes/**.py'
 
 
-def base():
+def cmake():
     return _CMakeConanFile
+
+def python():
+    return _PythonConanFile
