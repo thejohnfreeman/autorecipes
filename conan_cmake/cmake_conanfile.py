@@ -22,7 +22,7 @@ class CMakeAttributes:
         if self.attrs is None:
             # We are assuming the source directory attribute will be named
             # ``source_dir``.
-            source_dir = typ.source_dir  # type: ignore
+            source_dir = Path(os.getcwd())
             build_dir = source_dir / '.conan_cmake'
             build_dir.mkdir(parents=True, exist_ok=True)
             sp.run(['conan', 'install', source_dir], cwd=build_dir)
@@ -67,10 +67,6 @@ class ExportsDescriptor:
 
 class CMakeConanFile(ConanFile):
     """A base class for Conan recipes for CMake projects."""
-
-    @classproperty
-    def source_dir(cls):  # pylint: disable=no-self-argument,no-self-use
-        return Path(os.getcwd())
 
     attrs = CMakeAttributes()
 
