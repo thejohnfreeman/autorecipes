@@ -1,14 +1,15 @@
 """Types and class property descriptors."""
 
+import functools
 import typing as t
 
-import typing_extensions as tex
+# We are missing :class:`typing_extensions.Protocol` because of Conan.
 
 R = t.TypeVar('R', covariant=True)
 T = t.TypeVar('T')
 
 
-class Bindable(t.Generic[R], tex.Protocol):
+class Bindable(t.Generic[R]):
     """A protocol for callables.
 
     The default protocol, :class:`t.Callable`, is missing the :func:`__get__`
@@ -19,7 +20,7 @@ class Bindable(t.Generic[R], tex.Protocol):
         ...
 
 
-class Descriptor(t.Generic[T], tex.Protocol):
+class Descriptor(t.Generic[T]):
     """The type of a descriptor."""
 
     def __get__(self, obj: object, typ: type = None) -> T:
@@ -31,6 +32,28 @@ class Descriptor(t.Generic[T], tex.Protocol):
     def __delete__(self, obj: object) -> None:
         ...
 
+
+# Because Conan makes it impossible to just import code from PyPI,
+# and because it's such a small class,
+# we implement our own ``cached_property`` descriptor.
+class CachedPropertyDescriptor(Descriptor[T]):
+    """A caching version of :func:`property`."""
+
+    def __init__(self, fget):
+        functools.update_wrapper(self, fget)
+        self.fget = fget
+
+    def __get__(self, obj: object, typ: type = None):
+        if obj is None:
+            return self
+        if typ is None:
+            typ = type(obj)
+        f = self.fget
+        value = obj.__dict__[f.__name__] = f.__get__(obj, typ)()
+        return value
+
+
+cached_property = CachedPropertyDescriptor
 
 ClassGetter = Bindable[T]  # pylint: disable=invalid-name
 

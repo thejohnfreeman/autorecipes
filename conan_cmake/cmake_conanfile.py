@@ -6,10 +6,9 @@ from pathlib import Path
 import subprocess as sp
 import typing as t
 
-from cached_property import cached_property
 from conans import CMake, ConanFile  # type: ignore
 
-from conan_cmake.descriptors import classproperty
+from conan_cmake.descriptors import cached_property, classproperty
 
 
 class CMakeAttributes:
@@ -20,8 +19,6 @@ class CMakeAttributes:
 
     def __get__(self, obj: object, typ: type = None) -> t.Mapping[str, t.Any]:
         if self.attrs is None:
-            # We are assuming the source directory attribute will be named
-            # ``source_dir``.
             source_dir = Path(os.getcwd())
             build_dir = source_dir / '.conan_cmake'
             build_dir.mkdir(parents=True, exist_ok=True)
