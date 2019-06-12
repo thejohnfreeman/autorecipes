@@ -11,5 +11,5 @@ url = (
     "@THE_CMAKE_PROJECT_REPOSITORY_URL@" or
     "@THE_CMAKE_PROJECT_HOMEPAGE_URL@" or None
 )
-license = "@THE_CMAKE_PROJECT_LICENSE_ID@" or None
-author = "@THE_CMAKE_PROJECT_AUTHOR@" or None
+license = "@THE_PROJECT_LICENSE_ID@" or None
+author = "@THE_PROJECT_AUTHOR@" or None

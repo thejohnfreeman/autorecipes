@@ -18,14 +18,26 @@ class CMakeAttributes:
     def __init__(self):
         self.attrs = None
 
-    def __get__(self, obj: object,
-                typ: t.Type[ConanFile] = None) -> t.Mapping[str, t.Any]:
+    def __get__(
+        self,
+        obj: object,
+        typ: t.Type[ConanFile] = None,
+    ) -> t.Mapping[str, t.Any]:
         if self.attrs is None:
             source_dir = Path(os.getcwd())
+            # TODO: Try to cache the ``step1_dir`` within the ``source_dir``.
             # Configure the project in one directory,
             # then configure our "project" in a separate directory.
             with tempfile.TemporaryDirectory() as step1_dir:
-                sp.run(['conan', 'install', source_dir], cwd=step1_dir)
+                # TODO: Skip if no ``conanfile.txt``?
+                sp.run(
+                    [
+                        'conan',
+                        'install',
+                        source_dir / 'conanfile.txt',
+                    ],
+                    cwd=step1_dir
+                )
                 # It would save us some time if the CMake CLI could configure
                 # without generating.
                 sp.run(
@@ -83,6 +95,11 @@ class CMakeConanFile(ConanFile):
     description = attrs @ 'description'
     homepage = attrs @ 'homepage'
     url = attrs @ 'url'
+    license = attrs @ 'license'
+    author = attrs @ 'author'
+
+    # Because the recipe depends on the sources, we must export the sources.
+    exports = '*'
 
     # TODO: ConanAttributes like requires, build_requires, generators
     # Is there a facility in ``conans`` for parsing ``conanfile.txt``?
