@@ -60,4 +60,5 @@ class PythonConanFile(ConanFile):
         yield 'pyproject.toml'
         for package in cls.attrs.get('packages', []):
             if 'include' in package:
+                # TODO: Choose files better to include data.
                 yield f"{package['include']}/**.py"

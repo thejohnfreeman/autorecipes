@@ -1,0 +1,15 @@
+# We choose Python to give ourselves comments and expressions.
+# A module is slightly heavier than a `dict`,
+# and Python requires an interpreter while JSON just needs a parser,
+# but let's optimize this later.
+
+name = "@THE_CMAKE_PROJECT_NAME@"
+version = "@THE_CMAKE_PROJECT_VERSION@"
+description = "@THE_CMAKE_PROJECT_DESCRIPTION@" or None
+homepage = "@THE_CMAKE_PROJECT_HOMEPAGE_URL@" or None
+url = (
+    "@THE_CMAKE_PROJECT_REPOSITORY_URL@" or
+    "@THE_CMAKE_PROJECT_HOMEPAGE_URL@" or None
+)
+license = "@THE_CMAKE_PROJECT_LICENSE_ID@" or None
+author = "@THE_CMAKE_PROJECT_AUTHOR@" or None

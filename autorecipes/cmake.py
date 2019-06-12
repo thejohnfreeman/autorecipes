@@ -4,6 +4,7 @@ import importlib.util
 import os
 from pathlib import Path
 import subprocess as sp
+import tempfile
 import typing as t
 
 from conans import CMake, ConanFile  # type: ignore
@@ -17,32 +18,46 @@ class CMakeAttributes:
     def __init__(self):
         self.attrs = None
 
-    def __get__(self, obj: object, typ: type = None) -> t.Mapping[str, t.Any]:
+    def __get__(self, obj: object,
+                typ: t.Type[ConanFile] = None) -> t.Mapping[str, t.Any]:
         if self.attrs is None:
             source_dir = Path(os.getcwd())
-            build_dir = source_dir / '.conan_cmake'
-            build_dir.mkdir(parents=True, exist_ok=True)
-            sp.run(['conan', 'install', source_dir], cwd=build_dir)
-            # It would save us some time if the CMake CLI could configure
-            # without generating.
-            # TODO: Use scm attribute to copy code?
-            # TODO: Append call to configure_file to end of CMakeLists.txt,
-            # temporarily.
-            sp.run(
-                [
-                    'cmake',
-                    '-DCMAKE_TOOLCHAIN_FILE=conan_paths.cmake',
-                    source_dir,
-                ],
-                cwd=build_dir,
-            )
+            # Configure the project in one directory,
+            # then configure our "project" in a separate directory.
+            with tempfile.TemporaryDirectory() as step1_dir:
+                sp.run(['conan', 'install', source_dir], cwd=step1_dir)
+                # It would save us some time if the CMake CLI could configure
+                # without generating.
+                sp.run(
+                    [
+                        'cmake',
+                        '-DCMAKE_TOOLCHAIN_FILE=conan_paths.cmake',
+                        source_dir,
+                    ],
+                    cwd=step1_dir,
+                )
 
-            spec = importlib.util.spec_from_file_location( # type: ignore
-                'conan_attrs', build_dir / 'conan_attrs.py'
-            )
-            module = importlib.util.module_from_spec(spec)
-            spec.loader.exec_module(module)  # type: ignore
-            self.attrs = module
+                with tempfile.TemporaryDirectory() as step2_dir:
+                    step2_dir = Path(step2_dir)
+                    # ``pkg_resources`` doesn't work through
+                    # ``python_requires``, so we must use a hack.
+                    data_dir = Path(__file__) / '..' / 'data'
+                    data_dir = data_dir.resolve(strict=False)
+                    sp.run(
+                        [
+                            'cmake',
+                            f'-DSTEP1_DIR={step1_dir}',
+                            data_dir / 'configure',
+                        ],
+                        cwd=step2_dir,
+                    )
+
+                    spec = importlib.util.spec_from_file_location( # type: ignore
+                        'attributes', step2_dir / 'attributes.py'
+                    )
+                    module = importlib.util.module_from_spec(spec)
+                    spec.loader.exec_module(module)  # type: ignore
+                    self.attrs = module
         return self.attrs
 
     def __matmul__(self, key):

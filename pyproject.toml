@@ -7,7 +7,7 @@ documentation = "https://autorecipes.readthedocs.io/"
 repository = "https://github.com/thejohnfreeman/autorecipes/"
 readme = "README.rst"
 license = "ISC"
-packages = [{ include = "autorecipes" }]
+packages = [{ include = "autorecipes" }, { include = 'data' }]
 
 [tool.poetry.dependencies]
 python = "^3.6-dev"
