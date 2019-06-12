@@ -6,7 +6,8 @@ from pathlib import Path
 import subprocess as sp
 import typing as t
 
-from conans import ConanFile  # type: ignore
+from cached_property import cached_property
+from conans import CMake, ConanFile  # type: ignore
 
 from conan_cmake.descriptors import classproperty
 
@@ -23,15 +24,17 @@ class CMakeAttributes:
             # ``source_dir``.
             source_dir = typ.source_dir  # type: ignore
             build_dir = source_dir / '.conan_cmake'
-            build_dir.mkdirs(exist_ok=True)
+            build_dir.mkdir(parents=True, exist_ok=True)
             sp.run(['conan', 'install', source_dir], cwd=build_dir)
+            # It would save us some time if the CMake CLI could configure
+            # without generating.
             sp.run(
                 [
                     'cmake',
                     '-DCMAKE_TOOLCHAIN_FILE=conan_paths.cmake',
                     source_dir,
                 ],
-                cwd=build_dir
+                cwd=build_dir,
             )
 
             spec = importlib.util.spec_from_file_location(
@@ -49,10 +52,17 @@ class CMakeAttributes:
         def f(cls):
             # We are assuming that the :class:`CMakeAttributes` descriptor
             # will be named ``attrs``.
-            return cls.attrs[key]  # type: ignore
+            return getattr(cls.attrs, key)  # type: ignore
 
         f.__name__ = key
         return f
+
+
+class ExportsDescriptor:
+
+    def __get__(self, obj: object, typ: type = None) -> t.Iterable[str]:
+        """Only export tracked files."""
+        return sp.check_output(['git', 'ls-files']).decode().split()
 
 
 class CMakeConanFile(ConanFile):
@@ -70,7 +80,25 @@ class CMakeConanFile(ConanFile):
     homepage = attrs['homepage']
     url = attrs['url']
 
-    exports = '*'
+    # TODO: ConanAttributes like requires, build_requires, generators
+    # For now, just hard code.
+    generators = 'cmake_find_package', 'cmake_paths'
+    build_requires = ['doctest/2.3.1@bincrafters/stable']
+
+    # TODO: Just export what is in this commit.
+    exports = ExportsDescriptor()
     settings = 'arch', 'os', 'compiler', 'build_type'
     options = {'shared': [True, False]}
     default_options = {'shared': False}
+
+    @cached_property
+    def cmake(self):
+        cmake = CMake(self)
+        cmake.configure()
+        return cmake
+
+    def build(self):
+        self.cmake.build()
+
+    def package(self):
+        self.cmake.install()
