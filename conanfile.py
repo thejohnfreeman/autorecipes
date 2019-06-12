@@ -1,6 +1,6 @@
 from conans import ConanFile
 
-from autorecipes import CMakeConanFile as _CMakeConanFile, PythonConanFile as _PythonConanFile
+import autorecipes
 
 
 class Recipe(ConanFile):
@@ -11,11 +11,12 @@ class Recipe(ConanFile):
     homepage = 'https://autorecipes.readthedocs.io/'
     url = 'https://github.com/thejohnfreeman/autorecipes/'
     license = 'ISC'
-    exports = 'autorecipes/**.py'
+    exports = 'autorecipes/**.py', 'autorecipes/data/**'
 
 
 def cmake():
-    return _CMakeConanFile
+    return autorecipes.CMakeConanFile
+
 
 def python():
-    return _PythonConanFile
+    return autorecipes.PythonConanFile
