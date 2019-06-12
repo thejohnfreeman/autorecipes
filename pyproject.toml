@@ -17,7 +17,7 @@ toml = "^0.10.0"
 conan = "^1.14"
 
 [tool.poetry.extras]
-docs = ["sphinx", "sphinx_rtd_theme", "toml"]
+docs = ["sphinx", "sphinx_rtd_theme"]
 
 [tool.poetry.dev-dependencies]
 invoke = "^1.2"
@@ -29,7 +29,6 @@ pytest-cov = "^2.7"
 sphinx = "^1.8"
 sphinx-autobuild = "^0.7.1"
 sphinx_rtd_theme = "^0.4.3"
-toml = "^0.10.0"
 yapf = "^0.27.0"
 
 [build-system]
