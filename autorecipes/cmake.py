@@ -50,7 +50,6 @@ class CMakeAttributes:
                 )
 
                 with tempfile.TemporaryDirectory() as step2_dir:
-                    step2_dir = Path(step2_dir)
                     # ``pkg_resources`` doesn't work through
                     # ``python_requires``, so we must use a hack.
                     data_dir = Path(__file__) / '..' / 'data'
@@ -65,7 +64,7 @@ class CMakeAttributes:
                     )
 
                     spec = importlib.util.spec_from_file_location( # type: ignore
-                        'attributes', step2_dir / 'attributes.py'
+                        'attributes', f'{step2_dir}/attributes.py'
                     )
                     module = importlib.util.module_from_spec(spec)
                     spec.loader.exec_module(module)  # type: ignore
