@@ -25,6 +25,9 @@ class CMakeAttributes:
             sp.run(['conan', 'install', source_dir], cwd=build_dir)
             # It would save us some time if the CMake CLI could configure
             # without generating.
+            # TODO: Use scm attribute to copy code?
+            # TODO: Append call to configure_file to end of CMakeLists.txt,
+            # temporarily.
             sp.run(
                 [
                     'cmake',
@@ -34,7 +37,7 @@ class CMakeAttributes:
                 cwd=build_dir,
             )
 
-            spec = importlib.util.spec_from_file_location(
+            spec = importlib.util.spec_from_file_location( # type: ignore
                 'conan_attrs', build_dir / 'conan_attrs.py'
             )
             module = importlib.util.module_from_spec(spec)
@@ -67,6 +70,7 @@ class CMakeConanFile(ConanFile):
     url = attrs @ 'url'
 
     # TODO: ConanAttributes like requires, build_requires, generators
+    # Is there a facility in ``conans`` for parsing ``conanfile.txt``?
     # For now, just hard code.
     generators = 'cmake_find_package', 'cmake_paths'
     build_requires = ['doctest/2.3.1@bincrafters/stable']
@@ -82,13 +86,18 @@ class CMakeConanFile(ConanFile):
     default_options = {'shared': False}
 
     @cached_property
-    def cmake(self):
+    def cmake(self) -> CMake:  # pylint: disable=missing-docstring
         cmake = CMake(self)
         cmake.configure()
         return cmake
 
     def build(self):
-        self.cmake.build()
+        self.cmake.build()  # pylint: disable=no-member
 
     def package(self):
-        self.cmake.install()
+        self.cmake.install()  # pylint: disable=no-member
+
+    def package_info(self):
+        # TODO: dependency options from ``conanfile.txt``.
+        # TODO
+        pass

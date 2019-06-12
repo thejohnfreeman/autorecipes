@@ -10,7 +10,7 @@ import typing as t
 
 from conans import ConanFile  # type: ignore
 
-from conan_cmake.descriptors import classproperty
+from conan_cmake.descriptors import classproperty, fmap
 
 
 class PythonAttributes:
@@ -42,23 +42,22 @@ class PythonAttributes:
         return f
 
 
-class PythonExportsDescriptor:
-    """A descriptor that lazily computes exported sources."""
-
-    def __get__(self, obj: object, typ: type = None) -> t.Iterable[str]:
-        yield 'pyproject.toml'
-        for package in obj.attrs.get('packages', []):
-            if 'include' in package:
-                yield f"{package['include']}/**.py"
-
-
 class PythonConanFile(ConanFile):
     """A base class for Conan recipes for Python projects."""
+
     attrs = PythonAttributes()
 
     name = attrs @ 'name'
     version = attrs @ 'version'
     description = attrs @ 'description'
-    license = attrs @ 'license'
+    homepage = attrs @ 'documentation'
     url = attrs @ 'repository'
-    exports = PythonExportsDescriptor()
+    license = attrs @ 'license'
+    author = fmap(', '.join, attrs @ 'authors')
+
+    @classproperty
+    def exports(cls):  # pylint: disable=missing-docstring,no-self-argument
+        yield 'pyproject.toml'
+        for package in cls.attrs.get('packages', []):
+            if 'include' in package:
+                yield f"{package['include']}/**.py"

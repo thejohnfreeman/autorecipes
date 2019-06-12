@@ -1,49 +1,33 @@
 """Types and class property descriptors."""
 
-import functools
-import typing as t
 
-# We are missing :class:`typing_extensions.Protocol` because of Conan.
+class MappedDescriptor:
+    """A descriptor that maps a function over another descriptor."""
 
-R = t.TypeVar('R', covariant=True)
-T = t.TypeVar('T')
+    def __init__(self, descriptor, function):
+        self.descriptor = descriptor
+        self.function = function
 
-
-class Bindable(t.Generic[R]):
-    """A protocol for callables.
-
-    The default protocol, :class:`t.Callable`, is missing the :func:`__get__`
-    method.
-    """
-
-    def __get__(self, obj: object, typ: type) -> t.Callable[..., R]:
-        ...
+    def __get__(self, obj, typ):
+        return self.function(self.descriptor.__get__(obj, typ))
 
 
-class Descriptor(t.Generic[T]):
-    """The type of a descriptor."""
-
-    def __get__(self, obj: object, typ: type = None) -> T:
-        ...
-
-    def __set__(self, obj: object, value: T) -> None:
-        ...
-
-    def __delete__(self, obj: object) -> None:
-        ...
+def fmap(function, descriptor):
+    """Return a descriptor that maps a function over another descriptor."""
+    return MappedDescriptor(descriptor, function)
 
 
 # Because Conan makes it impossible to just import code from PyPI,
 # and because it's such a small class,
 # we implement our own ``cached_property`` descriptor.
-class CachedPropertyDescriptor(Descriptor[T]):
+class CachedPropertyDescriptor:
     """A caching version of :func:`property`."""
 
     def __init__(self, fget):
-        functools.update_wrapper(self, fget)
+        self.__doc__ = fget.__doc__
         self.fget = fget
 
-    def __get__(self, obj: object, typ: type = None):
+    def __get__(self, obj, typ=None):
         if obj is None:
             return self
         if typ is None:
@@ -53,21 +37,19 @@ class CachedPropertyDescriptor(Descriptor[T]):
         return value
 
 
-cached_property = CachedPropertyDescriptor
-
-ClassGetter = Bindable[T]  # pylint: disable=invalid-name
+cached_property = CachedPropertyDescriptor  # pylint: disable=invalid-name
 
 
-class ClassPropertyDescriptor(Descriptor[T]):
+class ClassPropertyDescriptor:
     """A descriptor for a class attribute.
 
     Compare with :func:`property`, which is for instance attributes.
     """
 
-    def __init__(self, fget: ClassGetter):
+    def __init__(self, fget):
         self.fget = fget
 
-    def __get__(self, obj: object, typ: type = None) -> T:
+    def __get__(self, obj, typ=None):
         if typ is None:
             typ = type(obj)
         return self.fget.__get__(obj, typ)()
@@ -75,26 +57,26 @@ class ClassPropertyDescriptor(Descriptor[T]):
     # Setting or deleting a class attribute does not delegate to a descriptor.
 
 
-def classproperty(fget) -> ClassPropertyDescriptor:
+def classproperty(fget):
     return ClassPropertyDescriptor(classmethod(fget))
 
 
 classproperty.__doc__ = ClassPropertyDescriptor.__doc__
 
-_UNDEFINED: t.Any = object()
+_UNDEFINED = object()
 
 
-class CachedClassPropertyDescriptor(Descriptor[T]):
+class CachedClassPropertyDescriptor:
     """A caching descriptor for a class attribute.
 
     Compare with :class:`ClassPropertyDescriptor`, which does not cache.
     """
 
-    def __init__(self, fget: ClassGetter):
+    def __init__(self, fget):
         self.fget = fget
-        self.value: T = _UNDEFINED
+        self.value = _UNDEFINED
 
-    def __get__(self, obj: object, typ: type = None) -> T:
+    def __get__(self, obj, typ=None):
         if self.value is _UNDEFINED:
             if typ is None:
                 typ = type(obj)
@@ -102,7 +84,7 @@ class CachedClassPropertyDescriptor(Descriptor[T]):
         return self.value
 
 
-def cached_classproperty(fget) -> CachedClassPropertyDescriptor:
+def cached_classproperty(fget):
     return CachedClassPropertyDescriptor(classmethod(fget))
 
 
