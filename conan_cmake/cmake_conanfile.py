@@ -42,7 +42,7 @@ class CMakeAttributes:
             self.attrs = module
         return self.attrs
 
-    def __getitem__(self, key):
+    def __matmul__(self, key):
         """Create a descriptor that lazily returns one attribute."""
 
         @classproperty
@@ -60,11 +60,11 @@ class CMakeConanFile(ConanFile):
 
     attrs = CMakeAttributes()
 
-    name = attrs['name']
-    version = attrs['version']
-    description = attrs['description']
-    homepage = attrs['homepage']
-    url = attrs['url']
+    name = attrs @ 'name'
+    version = attrs @ 'version'
+    description = attrs @ 'description'
+    homepage = attrs @ 'homepage'
+    url = attrs @ 'url'
 
     # TODO: ConanAttributes like requires, build_requires, generators
     # For now, just hard code.

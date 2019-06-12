@@ -29,7 +29,7 @@ class PythonAttributes:
             self.attrs = pyproject['tool']['poetry']
         return self.attrs
 
-    def desc(self, key):  # pylint: disable=no-self-use
+    def __matmul__(self, key):  # pylint: disable=no-self-use
         """Create a descriptor that lazily returns one attribute."""
 
         @classproperty
@@ -56,9 +56,9 @@ class PythonConanFile(ConanFile):
     """A base class for Conan recipes for Python projects."""
     attrs = PythonAttributes()
 
-    name = attrs.desc('name')
-    version = attrs.desc('version')
-    description = attrs.desc('description')
-    license = attrs.desc('license')
-    url = attrs.desc('repository')
+    name = attrs @ 'name'
+    version = attrs @ 'version'
+    description = attrs @ 'description'
+    license = attrs @ 'license'
+    url = attrs @ 'repository'
     exports = PythonExportsDescriptor()
