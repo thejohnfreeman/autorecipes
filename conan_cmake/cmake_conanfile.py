@@ -58,13 +58,6 @@ class CMakeAttributes:
         return f
 
 
-class ExportsDescriptor:
-
-    def __get__(self, obj: object, typ: type = None) -> t.Iterable[str]:
-        """Only export tracked files."""
-        return sp.check_output(['git', 'ls-files']).decode().split()
-
-
 class CMakeConanFile(ConanFile):
     """A base class for Conan recipes for CMake projects."""
 
@@ -81,8 +74,12 @@ class CMakeConanFile(ConanFile):
     generators = 'cmake_find_package', 'cmake_paths'
     build_requires = ['doctest/2.3.1@bincrafters/stable']
 
-    # TODO: Just export what is in this commit.
-    exports = ExportsDescriptor()
+    scm = {
+        'type': 'git',
+        'url': 'auto',
+        'revision': 'auto',
+    }
+
     settings = 'arch', 'os', 'compiler', 'build_type'
     options = {'shared': [True, False]}
     default_options = {'shared': False}
