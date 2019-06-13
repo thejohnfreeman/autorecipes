@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.7)
-project(conan_cmake LANGUAGES NONE)
+project(autorecipes LANGUAGES NONE)
 load_cache("${STEP1_DIR}" READ_WITH_PREFIX THE_
   CMAKE_PROJECT_NAME
   CMAKE_PROJECT_VERSION
