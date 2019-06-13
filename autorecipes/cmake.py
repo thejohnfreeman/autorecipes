@@ -99,6 +99,11 @@ class CMakeConanFile(ConanFile):
 
     # Because the recipe depends on the sources, we must export the sources.
     exports = '*'
+    # Do not copy the sources to the build directory.
+    # This reflects the recommended CMake workflow for an out-of-source build.
+    # In exchange, we promise not to touch the sources because they will be
+    # shared by all configurations (settings + options).
+    no_copy_source = True
 
     # TODO: ConanAttributes like requires, build_requires, generators
     # Is there a facility in ``conans`` for parsing ``conanfile.txt``?
