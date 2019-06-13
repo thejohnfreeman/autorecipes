@@ -134,6 +134,26 @@ class CMakeConanFile(ConanFile):
         self.cmake.install()  # pylint: disable=no-member
 
     def package_info(self):
-        # TODO: dependency options from ``conanfile.txt``.
-        # TODO
-        pass
+        source_dir = Path(__file__) / '..' / 'data' / 'install'
+        source_dir = source_dir.resolve(strict=False)
+        with tempfile.TemporaryDirectory() as build_dir:
+            sp.run(
+                [
+                    'cmake',
+                    f'-DCMAKE_BUILD_TYPE={self.settings.build_type}',
+                    f'-DCMAKE_PREFIX_PATH={self.package_folder}',
+                    f'-DPACKAGE_NAME={self.name}',
+                    source_dir,
+                ],
+                cwd=build_dir,
+            )
+            # TODO: Is there somewhere to check the output?
+
+            spec = importlib.util.spec_from_file_location( # type: ignore
+                'cpp_info', f'{build_dir}/cpp_info.py'
+            )
+            module = importlib.util.module_from_spec(spec)
+            spec.loader.exec_module(module)  # type: ignore
+            module.fill(self.cpp_info)
+
+        # TODO: Can we set dependency options from ``conanfile.txt``?

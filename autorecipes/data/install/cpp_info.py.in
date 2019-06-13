@@ -1,0 +1,80 @@
+# Because every value just happens to be a list, we can assume we are always
+# dealing with lists.
+
+def stable_union(xs, ys):
+    """Union one list with another, in stable order, without duplicates."""
+    # https://stackoverflow.com/a/480227/618906
+    seen = set()
+    add = seen.add
+    return [x for x in xs + ys if not (x in seen or add(x))]
+
+# https://docs.conan.io/en/latest/reference/conanfile/attributes.html#cpp-info
+class SingleTargetCppInfo:
+    def __init__(self, cpp_info):
+        self.cpp_info = cpp_info
+        # Since we know exactly the values to set, we can set empty defaults.
+        self.cpp_info.includedirs = []
+        self.cpp_info.libdirs = []
+        # TODO: Is CMake aware of resource directories?
+        self.cpp_info.resdirs = []
+        self.cpp_info.bindirs = []
+
+    def add(self, target, attribute, value):
+        values = getattr(self.cpp_info, attribute)
+        if value not in values:
+            values.append(value)
+
+    def add_library(self, target, library):
+        libs = self.cpp_info.libs
+        if library not in libs:
+            libs.append(library)
+
+    def add_executable(self, target, executable):
+        # TODO: Add to .exes attribute conditional on the version of Conan.
+        # See 'New fields to cpp_info':
+        # https://github.com/conan-io/conan/issues/5090#issue-439973044
+        pass
+
+    def add_dependency(self, target, dependency):
+        # All targets are folded into one, which has no (internal)
+        # dependencies.
+        pass
+
+
+# https://github.com/conan-io/conan/issues/5090
+class MultiTargetCppInfo:
+    def __init__(self, cpp_info):
+        self.cpp_info = cpp_info
+        # The general target should be completely empty.
+        # TODO: It may become forbidden to touch these attributes when using
+        # components. Remove these assignments if it does.
+        self.cpp_info.includedirs = []
+        self.cpp_info.libdirs = []
+        self.cpp_info.resdirs = []
+        self.cpp_info.bindirs = []
+
+    def add(self, target, attribute, values):
+        values = getattr(self.cpp_info[target], attribute)
+        if value not in values:
+            values.append(value)
+
+    def add_library(self, target, library):
+        self.cpp_info[target].lib = library
+
+    def add_executable(self, target, executable):
+        self.cpp_info[target].exe = executable
+
+    def add_dependency(self, target, dependency):
+        deps = self.cpp_info[target].deps
+        if dependency not in deps:
+            deps.append(dependency)
+
+
+def fill(cpp_info):
+    Builder = (
+        MultiTargetCppInfo
+        if hasattr(type(cpp_info), '__getitem__') else
+        SingleTargetCppInfo
+    )
+    builder = Builder(cpp_info)
+@block@
