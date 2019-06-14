@@ -1,13 +1,6 @@
 # Because every value just happens to be a list, we can assume we are always
 # dealing with lists.
 
-def stable_union(xs, ys):
-    """Union one list with another, in stable order, without duplicates."""
-    # https://stackoverflow.com/a/480227/618906
-    seen = set()
-    add = seen.add
-    return [x for x in xs + ys if not (x in seen or add(x))]
-
 # https://docs.conan.io/en/latest/reference/conanfile/attributes.html#cpp-info
 class SingleTargetCppInfo:
     def __init__(self, cpp_info):
