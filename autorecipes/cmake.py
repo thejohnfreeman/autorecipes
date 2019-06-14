@@ -9,21 +9,30 @@ import typing as t
 
 from conans import CMake, ConanFile  # type: ignore
 
-from autorecipes.descriptors import cached_property, classproperty
+from autorecipes.descriptors import cached_classproperty, cached_property, classproperty
 
 
-class CMakeAttributes:
+def named(name):
+
+    def decorator(obj):
+        obj.__name__ = name
+        return obj
+
+    return decorator
+
+
+class CMakeListsTxtAttributes:
     """A descriptor that lazily loads attributes from the CMake configuration."""
 
     def __init__(self):
-        self.attrs = None
+        self.module = None
 
     def __get__(
         self,
         obj: object,
         typ: t.Type[ConanFile] = None,
     ) -> t.Mapping[str, t.Any]:
-        if self.attrs is None:
+        if self.module is None:
             source_dir = Path(os.getcwd())
             # TODO: Try to cache the ``step1_dir`` within the ``source_dir``.
             # Configure the project in one directory,
@@ -68,34 +77,62 @@ class CMakeAttributes:
                     )
                     module = importlib.util.module_from_spec(spec)
                     spec.loader.exec_module(module)  # type: ignore
-                    self.attrs = module
-        return self.attrs
+                    self.module = module
+        return self.module
 
     def __matmul__(self, key):
         """Create a descriptor that lazily returns one attribute."""
 
         @classproperty
+        @named(key)
         def f(cls):
-            # We are assuming that the :class:`CMakeAttributes` descriptor
-            # will be named ``attrs``.
-            return getattr(cls.attrs, key)  # type: ignore
+            # We are assuming that the :class:`CMakeListsTxtAttributes`
+            # descriptor will be named ``cmakeliststxt``.
+            return getattr(cls.cmakeliststxt, key)  # type: ignore
 
-        f.__name__ = key
+        return f
+
+
+class ConanFileTxtAttributes:
+
+    def __init__(self):
+        self.loader = None
+
+    def __get__(
+        self,
+        obj: object,
+        typ: t.Type[ConanFile] = None,
+    ) -> t.Mapping[str, t.Any]:
+        if self.loader is None:
+            from conans.client.loader_txt import ConanFileTextLoader
+            with open('conanfile.txt', 'r') as f:
+                self.loader = ConanFileTextLoader(f.read())
+        return self.loader
+
+    def __matmul__(self, key):
+
+        @classproperty
+        @named(key)
+        def f(cls):
+            # We are assuming that the :class:`ConanFileTxtAttributes`
+            # descriptor will be named ``conanfiletxt``.
+            return getattr(cls.conanfiletxt, key)
+
         return f
 
 
 class CMakeConanFile(ConanFile):
     """A base class for Conan recipes for CMake projects."""
 
-    attrs = CMakeAttributes()
+    cmakeliststxt = CMakeListsTxtAttributes()
 
-    name = attrs @ 'name'
-    version = attrs @ 'version'
-    description = attrs @ 'description'
-    homepage = attrs @ 'homepage'
-    url = attrs @ 'url'
-    license = attrs @ 'license'
-    author = attrs @ 'author'
+    name = cmakeliststxt @ 'name'
+    version = cmakeliststxt @ 'version'
+    description = cmakeliststxt @ 'description'
+    homepage = cmakeliststxt @ 'homepage'
+    url = cmakeliststxt @ 'url'
+    license = cmakeliststxt @ 'license'
+    author = cmakeliststxt @ 'author'
 
     # Because the recipe depends on the sources, we must export the sources.
     exports = '*'
@@ -105,11 +142,11 @@ class CMakeConanFile(ConanFile):
     # shared by all configurations (settings + options).
     no_copy_source = True
 
-    # TODO: ConanAttributes like requires, build_requires, generators
-    # Is there a facility in ``conans`` for parsing ``conanfile.txt``?
-    # For now, just hard code.
-    generators = 'cmake_find_package', 'cmake_paths'
-    build_requires = ['doctest/2.3.1@bincrafters/stable']
+    conanfiletxt = ConanFileTxtAttributes()
+
+    generators = conanfiletxt @ 'generators'
+    requires = conanfiletxt @ 'requirements'
+    build_requires = conanfiletxt @ 'build_requirements'
 
     scm = {
         'type': 'git',
