@@ -9,10 +9,14 @@ import typing as t
 
 from conans import CMake, ConanFile  # type: ignore
 
-from autorecipes.descriptors import cached_classproperty, cached_property, classproperty
+from autorecipes.descriptors import (
+    cached_property,
+    classproperty,
+)
 
 
 def named(name):
+    """Change the name of something (via a decorator)."""
 
     def decorator(obj):
         obj.__name__ = name
@@ -94,6 +98,7 @@ class CMakeListsTxtAttributes:
 
 
 class ConanFileTxtAttributes:
+    """A descriptor that lazily loads attributes from ``conanfile.txt``."""
 
     def __init__(self):
         self.loader = None
@@ -104,7 +109,7 @@ class ConanFileTxtAttributes:
         typ: t.Type[ConanFile] = None,
     ) -> t.Mapping[str, t.Any]:
         if self.loader is None:
-            from conans.client.loader_txt import ConanFileTextLoader
+            from conans.client.loader_txt import ConanFileTextLoader  # type: ignore
             with open('conanfile.txt', 'r') as f:
                 self.loader = ConanFileTextLoader(f.read())
         return self.loader
@@ -178,7 +183,7 @@ class CMakeConanFile(ConanFile):
                 [
                     'cmake',
                     f'-DCMAKE_BUILD_TYPE={self.settings.build_type}',
-                    f'-DCMAKE_PREFIX_PATH={self.package_folder}',
+                    f'-DCMAKE_PREFIX_PATH={self.package_folder}',  # pylint: disable=no-member
                     f'-DPACKAGE_NAME={self.name}',
                     source_dir,
                 ],
