@@ -48,8 +48,8 @@ then you should be able to copy this recipe to package it for Conan:
    CMakeConanFile = python_requires('autorecipes/[*]@jfreeman/testing').cmake()
 
    class Recipe(CMakeConanFile):
-       name = CMakeConanFile.name
-       version = CMakeConanFile.version
+       name = CMakeConanFile.__dict__['name']
+       version = CMakeConanFile.__dict__['version']
 
 
 Python
@@ -72,8 +72,8 @@ then you should be able to copy this recipe to package it for Conan:
    PythonConanFile = python_requires('autorecipes/[*]@jfreeman/testing').python()
 
    class Recipe(PythonConanFile):
-       name = PythonConanFile.name
-       version = PythonConanFile.version
+       name = PythonConanFile.__dict__['name']
+       version = PythonConanFile.__dict__['version']
 
 
 FAQ
@@ -87,5 +87,16 @@ FAQ
   Conan parses the recipe looking for the ``name`` and ``version`` attributes,
   instead of just executing it. Thus, we must copy the attributes to move past
   that check.
+
+  Further, these attributes are descriptors_. Accessing them with dot
+  notation, like ``CMakeConanFile.name``, evaluates them against the class
+  ``CMakeConanFile`` instead of your recipe, but they need the most derived
+  type to work correctly.
+
+  .. _descriptors: https://docs.python.org/3/howto/descriptor.html
+
+- **Can I override some attributes?**
+
+  Yes. These base classes just provide default values.
 
 .. end-include

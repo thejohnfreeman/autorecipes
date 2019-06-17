@@ -22,13 +22,13 @@ def generate_conanfile_txt(requires, build_requires, generators) -> str:
     text = ''
     if requires:
         text += '[requires]\n'
-        text += '\n'.join(requires)
+        text += ''.join(f'{line}\n' for line in requires)
     if build_requires:
         text += '[build_requires]\n'
-        text += '\n'.join(build_requires)
+        text += ''.join(f'{line}\n' for line in build_requires)
     if text and generators:
         text += '[generators]'
-        text += '\n'.join(generators)
+        text += ''.join(f'{line}\n' for line in generators)
     return text
 
 
