@@ -200,6 +200,11 @@ class CMakeConanFile(ConanFile):
     @cached_property
     def cmake(self) -> CMake:  # pylint: disable=missing-docstring
         cmake = CMake(self)
+        # TODO: Shouldn't :class:`CMake` be smart enough for this?
+        toolchain_file = Path(self.build_folder) / 'conan_paths.cmake'
+        if toolchain_file.is_file():
+            print(f'adding CMAKE_TOOLCHAIN_FILE = {toolchain_file}')
+            cmake.definitions['CMAKE_TOOLCHAIN_FILE'] = str(toolchain_file)
         cmake.configure()
         return cmake
 
