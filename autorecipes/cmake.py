@@ -218,17 +218,22 @@ class CMakeConanFile(ConanFile):
         source_dir = Path(__file__) / '..' / 'data' / 'install'
         source_dir = source_dir.resolve(strict=False)
         with tempfile.TemporaryDirectory() as build_dir:
+            try:
+                build_type_args = [
+                    f'-DCMAKE_BUILD_TYPE={self.settings.build_type}'
+                ]
+            except:
+                build_type_args = []
             sp.run(
                 [
                     'cmake',
-                    f'-DCMAKE_BUILD_TYPE={self.settings.build_type}',
+                    *build_type_args,
                     f'-DCMAKE_PREFIX_PATH={self.package_folder}',  # pylint: disable=no-member
                     f'-DPACKAGE_NAME={self.name}',
                     source_dir,
                 ],
                 cwd=build_dir,
             )
-            # TODO: Is there somewhere to check the output?
 
             spec = importlib.util.spec_from_file_location( # type: ignore
                 'cpp_info', f'{build_dir}/cpp_info.py'
