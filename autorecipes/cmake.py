@@ -14,16 +14,23 @@ from autorecipes.descriptors import (
     cached_property,
     classproperty,
 )
+from autorecipes.stdlib import Object, named, zero_or_more
 
 
-def named(name):
-    """Change the name of something (via a decorator)."""
-
-    def decorator(obj):
-        obj.__name__ = name
-        return obj
-
-    return decorator
+def generate_conanfile_txt(requires, build_requires, generators) -> str:
+    """Generate contents of a ``conanfile.txt``."""
+    text = ''
+    if requires:
+        text += '[requires]\n'
+        text += '\n'.join(requires)
+    if build_requires:
+        text += '[build_requires]\n'
+        text += '\n'.join(build_requires)
+    if text and generators:
+        text += '[generators]'
+        text += '\n'.join(generators)
+    print(f'conanfile.txt:\n{text}')
+    return text
 
 
 class CMakeListsTxtAttributes:
@@ -37,27 +44,41 @@ class CMakeListsTxtAttributes:
         obj: object,
         typ: t.Type[ConanFile] = None,
     ) -> t.Mapping[str, t.Any]:
+        if typ is None:
+            raise ValueError(f'expected class type: {typ}')
         if self.module is None:
             source_dir = Path(os.getcwd())
             # TODO: Try to cache the ``step1_dir`` within the ``source_dir``.
             # Configure the project in one directory,
             # then configure our "project" in a separate directory.
             with tempfile.TemporaryDirectory() as step1_dir:
-                # TODO: Skip if no ``conanfile.txt``?
-                sp.run(
-                    [
-                        'conan',
-                        'install',
-                        source_dir / 'conanfile.txt',
-                    ],
-                    cwd=step1_dir
-                )
+                conanfile: t.Any = source_dir / 'conanfile.txt'
+                # Generate a ``conanfile.txt`` if the requirements are given
+                # in this recipe, to avoid (infinite) recursion.
+                generators = zero_or_more(typ.generators)
+                if not conanfile.exists():
+                    text = generate_conanfile_txt(
+                        zero_or_more(typ.requires),
+                        zero_or_more(typ.build_requires),
+                        generators,
+                    )
+                    if text:
+                        conanfile = Path(step1_dir) / 'conanfile.txt'
+                        conanfile.write_text(text)
+                    else:
+                        conanfile = None
+                if conanfile is not None:
+                    sp.run(['conan', 'install', conanfile], cwd=step1_dir)
                 # It would save us some time if the CMake CLI could configure
                 # without generating.
+                toolchain_args = (
+                    ['-DCMAKE_TOOLCHAIN_FILE=conan_paths.cmake']
+                    if 'cmake_paths' in generators else []
+                )
                 sp.run(
                     [
                         'cmake',
-                        '-DCMAKE_TOOLCHAIN_FILE=conan_paths.cmake',
+                        *toolchain_args,
                         source_dir,
                     ],
                     cwd=step1_dir,
@@ -98,21 +119,31 @@ class CMakeListsTxtAttributes:
         return f
 
 
+_UNDEFINED = object()
+
+
 class ConanFileTxtAttributes:
     """A descriptor that lazily loads attributes from ``conanfile.txt``."""
 
     def __init__(self):
-        self.loader = None
+        self.loader = _UNDEFINED
 
     def __get__(
         self,
         obj: object,
         typ: t.Type[ConanFile] = None,
     ) -> t.Mapping[str, t.Any]:
-        if self.loader is None:
+        if self.loader is _UNDEFINED:
             from conans.client.loader_txt import ConanFileTextLoader  # type: ignore
-            with open('conanfile.txt', 'r') as f:
-                self.loader = ConanFileTextLoader(f.read())
+            try:
+                with open('conanfile.txt', 'r') as f:
+                    self.loader = ConanFileTextLoader(f.read())
+            except FileNotFoundError:
+                self.loader = Object(
+                    build_requirements=[],
+                    generators=[],
+                    requirements=[],
+                )
         return self.loader
 
     def __matmul__(self, key):

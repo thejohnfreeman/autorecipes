@@ -50,12 +50,6 @@ then you should be able to copy this recipe to package it for Conan:
        name = CMakeConanFile.name
        version = CMakeConanFile.version
 
-.. warning::
-   You'll need to declare any dependencies in ``conanfile.txt``, not in this
-   recipe, until `Issue #1`__ is resolved.
-
-.. __: https://github.com/thejohnfreeman/autorecipes/issues/1
-
 
 Python
 ======
