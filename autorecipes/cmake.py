@@ -157,7 +157,7 @@ class CMakeConanFile(ConanFile):
     requires = conanfiletxt @ 'requirements'
     build_requires = conanfiletxt @ 'build_requirements'
 
-    scm = {
+    git = {
         'type': 'git',
         'url': 'auto',
         'revision': 'auto',
