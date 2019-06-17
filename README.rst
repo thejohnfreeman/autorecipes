@@ -8,6 +8,14 @@ Generic Conan_ recipes for C/C++ and Python projects.
 
 .. _Conan: https://docs.conan.io/
 
+.. image:: https://api.bintray.com/packages/jfreeman/jfreeman/autorecipes%3Ajfreeman/images/download.svg
+   :target: https://bintray.com/jfreeman/jfreeman/autorecipes%3Ajfreeman/_latestVersion
+   :alt: Latest Bintray version
+
+.. .. image:: https://readthedocs.org/projects/autorecipes/badge/?version=latest
+   :target: https://autorecipes.readthedocs.io/
+   :alt: Documentation status
+
 .. image:: https://travis-ci.org/thejohnfreeman/autorecipes.svg?branch=master
    :target: https://travis-ci.org/thejohnfreeman/autorecipes
    :alt: Build status: Linux and OSX
@@ -16,13 +24,6 @@ Generic Conan_ recipes for C/C++ and Python projects.
    :target: https://ci.appveyor.com/project/thejohnfreeman/autorecipes
    :alt: Build status: Windows
 
-.. .. image:: https://readthedocs.org/projects/autorecipes/badge/?version=latest
-   :target: https://autorecipes.readthedocs.io/
-   :alt: Documentation status
-
-.. .. image:: https://api.bintray.com/packages/thejohnfreeman/autorecipes/autorecipes%3Aautorecipes/images/download.svg
-   :target: https://bintray.com/thejohnfreeman/autorecipes/autorecipes%3Aautorecipes/_latestVersion
-   :alt: Latest Bintray version
 
 C/C++
 =====
