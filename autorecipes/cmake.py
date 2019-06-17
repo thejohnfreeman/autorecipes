@@ -10,6 +10,7 @@ import typing as t
 from conans import CMake, ConanFile  # type: ignore
 
 from autorecipes.descriptors import (
+    cached_classproperty,
     cached_property,
     classproperty,
 )
@@ -140,7 +141,10 @@ class CMakeConanFile(ConanFile):
     author = cmakeliststxt @ 'author'
 
     # Because the recipe depends on the sources, we must export the sources.
-    exports = '*'
+    @cached_classproperty
+    def exports(cls):  # pylint: disable=no-self-argument,no-self-use
+        return sp.check_output(['git', 'ls-files']).decode().strip().split()
+
     # Do not copy the sources to the build directory.
     # This reflects the recommended CMake workflow for an out-of-source build.
     # In exchange, we promise not to touch the sources because they will be

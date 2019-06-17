@@ -1,6 +1,9 @@
+import subprocess as sp
+
 from conans import ConanFile
 
 import autorecipes
+from autorecipes.descriptors import cached_classproperty
 
 
 class Recipe(ConanFile):
@@ -11,7 +14,12 @@ class Recipe(ConanFile):
     homepage = 'https://autorecipes.readthedocs.io/'
     url = 'https://github.com/thejohnfreeman/autorecipes/'
     license = 'ISC'
-    exports = 'autorecipes/**.py', 'autorecipes/data/**'
+
+    @cached_classproperty
+    def exports(cls):
+        return sp.check_output(['git', 'ls-files']).decode().strip().split()
+
+    no_copy_source = True
 
 
 def cmake():
