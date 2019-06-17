@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "autorecipes"
-version = "0.1.0"
+version = "0.2.0"
 description = "Generic Conan recipes for CMake and Python projects."
 authors = ["John Freeman <jfreeman08@gmail.com>"]
 documentation = "https://autorecipes.readthedocs.io/"
