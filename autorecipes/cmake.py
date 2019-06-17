@@ -29,7 +29,6 @@ def generate_conanfile_txt(requires, build_requires, generators) -> str:
     if text and generators:
         text += '[generators]'
         text += '\n'.join(generators)
-    print(f'conanfile.txt:\n{text}')
     return text
 
 
