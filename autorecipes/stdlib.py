@@ -22,9 +22,7 @@ def named(name):
 def one_or_more(value: t.Union[_StringLike, t.Iterable[_StringLike]]
                ) -> t.Iterable[_StringLike]:
     """Return a list of values from one or more values."""
-    return (
-        [value] if isinstance(value, str) or isinstance(value, bytes) else value
-    )
+    return [value] if isinstance(value, (str, bytes)) else value
 
 
 def zero_or_more(value: t.Union[None, _StringLike, t.Iterable[_StringLike]]
@@ -34,12 +32,13 @@ def zero_or_more(value: t.Union[None, _StringLike, t.Iterable[_StringLike]]
 
 
 def logging(f):
+    """Decorate a function to log its calls."""
 
     @functools.wraps(f)
     def decorated(*args, **kwargs):
-        xs = map(str, args)
-        ys = (f'{key}={value}' for key, value in kwargs.items())
-        print(f'{f.__name__}({", ".join([*xs, *ys])})...')
+        sargs = map(str, args)
+        skwargs = (f'{key}={value}' for key, value in kwargs.items())
+        print(f'{f.__name__}({", ".join([*sargs, *skwargs])})...')
         try:
             value = f(*args, **kwargs)
         except Exception as cause:
