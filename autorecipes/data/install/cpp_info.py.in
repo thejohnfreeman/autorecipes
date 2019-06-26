@@ -18,9 +18,7 @@ class SingleTargetCppInfo:
             values.append(value)
 
     def add_library(self, target, library):
-        libs = self.cpp_info.libs
-        if library not in libs:
-            libs.append(library)
+        self.add(target, 'libs', library)
 
     def add_executable(self, target, executable):
         # TODO: Add to .exes attribute conditional on the version of Conan.
