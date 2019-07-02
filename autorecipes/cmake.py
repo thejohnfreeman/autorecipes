@@ -7,7 +7,7 @@ import subprocess as sp
 import tempfile
 import typing as t
 
-from conans import CMake, ConanFile  # type: ignore
+from conans import CMake, ConanFile
 
 from autorecipes.descriptors import (
     cached_classproperty,
@@ -97,7 +97,7 @@ class CMakeListsTxtAttributes:
                         cwd=step2_dir,
                     )
 
-                    spec = importlib.util.spec_from_file_location( # type: ignore
+                    spec = importlib.util.spec_from_file_location(
                         'attributes', f'{step2_dir}/attributes.py'
                     )
                     module = importlib.util.module_from_spec(spec)
@@ -113,7 +113,7 @@ class CMakeListsTxtAttributes:
         def f(cls):
             # We are assuming that the :class:`CMakeListsTxtAttributes`
             # descriptor will be named ``cmakeliststxt``.
-            return getattr(cls.cmakeliststxt, key)  # type: ignore
+            return getattr(cls.cmakeliststxt, key)
 
         return f
 
@@ -201,7 +201,7 @@ class CMakeConanFile(ConanFile):
     def cmake(self) -> CMake:  # pylint: disable=missing-docstring
         cmake = CMake(self)
         # TODO: Shouldn't :class:`CMake` be smart enough for this?
-        toolchain_file = Path(self.build_folder) / 'conan_paths.cmake'
+        toolchain_file = Path(self.build_folder) / 'conan_paths.cmake'  # pylint: disable=no-member
         if toolchain_file.is_file():
             print(f'adding CMAKE_TOOLCHAIN_FILE = {toolchain_file}')
             cmake.definitions['CMAKE_TOOLCHAIN_FILE'] = str(toolchain_file)
@@ -235,11 +235,11 @@ class CMakeConanFile(ConanFile):
                 cwd=build_dir,
             )
 
-            spec = importlib.util.spec_from_file_location( # type: ignore
+            spec = importlib.util.spec_from_file_location(
                 'cpp_info', f'{build_dir}/cpp_info.py'
             )
             module = importlib.util.module_from_spec(spec)
-            spec.loader.exec_module(module)  # type: ignore
+            spec.loader.exec_module(module)
             module.fill(self.cpp_info)
 
         # TODO: Can we set dependency options from ``conanfile.txt``?

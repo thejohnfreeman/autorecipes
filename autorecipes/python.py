@@ -8,7 +8,7 @@ import os
 from pathlib import Path
 import typing as t
 
-from conans import ConanFile  # type: ignore
+from conans import ConanFile
 
 from autorecipes.descriptors import classproperty, fmap
 
