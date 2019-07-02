@@ -11,6 +11,6 @@ url = (
     "@THE_CMAKE_PROJECT_REPOSITORY_URL@" or
     "@THE_CMAKE_PROJECT_HOMEPAGE_URL@" or None
 )
-license = "@THE_PROJECT_LICENSE@" or None
+license = "@THE_CMAKE_PROJECT_LICENSE@" or None
 # Conan makes us collapse all the authors into one string.
-author = "@THE_PROJECT_AUTHORS@" or None
+author = "@THE_CMAKE_PROJECT_AUTHORS@" or None
