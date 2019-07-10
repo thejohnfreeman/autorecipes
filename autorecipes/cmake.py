@@ -67,7 +67,7 @@ class CMakeListsTxtAttributes:
                     else:
                         conanfile = None
                 if conanfile is not None:
-                    sp.run(['conan', 'install', conanfile], cwd=step1_dir)
+                    sp.run(['conan', 'install', str(conanfile)], cwd=step1_dir)
                 # It would save us some time if the CMake CLI could configure
                 # without generating.
                 toolchain_args = (
@@ -78,7 +78,7 @@ class CMakeListsTxtAttributes:
                     [
                         'cmake',
                         *toolchain_args,
-                        source_dir,
+                        str(source_dir),
                     ],
                     cwd=step1_dir,
                 )
@@ -92,7 +92,7 @@ class CMakeListsTxtAttributes:
                         [
                             'cmake',
                             f'-DSTEP1_DIR={step1_dir}',
-                            data_dir / 'configure',
+                            str(data_dir / 'configure'),
                         ],
                         cwd=step2_dir,
                     )
@@ -230,7 +230,7 @@ class CMakeConanFile(ConanFile):
                     *build_type_args,
                     f'-DCMAKE_PREFIX_PATH={self.package_folder}',  # pylint: disable=no-member
                     f'-DPACKAGE_NAME={self.name}',
-                    source_dir,
+                    str(source_dir),
                 ],
                 cwd=build_dir,
             )
